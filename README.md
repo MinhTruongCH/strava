@@ -59,7 +59,7 @@ dbutils.secrets.put(scope="strava", key="expires_at", string_value="1234567890")
 
 ### 4. Create Job
 
-![](src/databricks_job.png)
+![](doc/databricks_job.png)
 
 To automate the data ingestion and transformation, create a **Databricks Job** that runs both the ingestion (Python) and transformation (SQL) notebooks in sequence.
 
@@ -84,7 +84,7 @@ This ensures the pipeline fetches the latest Strava activities and updates the S
 
 ### 5. Create Dashboards
 
-![](src/databricks_dashboard.png)
+![](doc/databricks_dashboard.png)
 
 Once the Silver table is ready, you can create dashboards for analysis.
 
