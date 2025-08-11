@@ -12,73 +12,47 @@
 
 # COMMAND ----------
 
-from stravalib.client import Client
+import time
+from stravalib import Client
 
-# 1. Create client
-client = Client()
+ACCESS_TOKEN = dbutils.secrets.get(scope = "strava", key = "access_token")
+REFRESH_TOKEN = dbutils.secrets.get(scope = "strava", key = "refresh_token")
+EXPIRES_AT = 1754914810
 
-# 2. Get authorization URL to paste in browser
-authorize_url = client.authorization_url(
-    client_id="172054",
-    redirect_uri='http://localhost/exchange_token',
-    scope=['read', 'activity:read_all']
+# --- Client Strava ---
+client = Client(
+    access_token=ACCESS_TOKEN,
+    refresh_token=REFRESH_TOKEN,
+    token_expires=EXPIRES_AT,
 )
-print("Go to:", authorize_url)
 
-# 3. Paste the code from the URL here after authorizing
-code = input("Enter the code from redirect URL: ")
-
-# 4. Exchange for access token
-token_response = client.exchange_code_for_token(
-    client_id="172054",
-    client_secret="a22c3e856d5830d5e18ba94bc20c001c2f2bf506",
-    code=code
-)
-access_token = token_response['access_token']
-client.access_token = access_token
-
-# 5. Fetch activities
-for activity in client.get_activities():
-    print(activity.name, activity.distance, activity.start_date_local)
-
+# --- Exemple d'appel API ---
+athlete = client.get_athlete()
+print(f"Hi, {athlete.firstname} Welcome to stravalib!")
+print("expires_at =", client.token_expires)
 
 # COMMAND ----------
 
-import requests
-import json
+# MAGIC %md
+# MAGIC # Secrets
+
+# COMMAND ----------
+
 import time
 
-# === Config ===
-CLIENT_ID = "172054"  # ton ID client
-CLIENT_SECRET = "a22c3e856d5830d5e18ba94bc20c001c2f2bf506"
-REFRESH_TOKEN = "54fdbabf054e7e45c8f93b650864fed847c2914e"
+from databricks.sdk import WorkspaceClient
 
-# 1. Fonction pour rafraîchir le token
-def get_access_token():
-    response = requests.post(
-        "https://www.strava.com/oauth/token",
-        data={
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-            "grant_type": "refresh_token",
-            "refresh_token": REFRESH_TOKEN
-        }
-    )
-    tokens = response.json()
-    return tokens["access_token"]
+w = WorkspaceClient()
 
-# 2. Obtenir un access token valide
-access_token = get_access_token()
+key_name = "###"
 
-# 3. Appel API Strava
-activities_url = "https://www.strava.com/api/v3/athlete/activities"
-r = requests.get(
-    activities_url,
-    headers={"Authorization": f"Bearer {access_token}"},
-    params={"per_page": 5, "page": 1}
-)
+scope_name = "strava"
 
-# 4. Afficher les activités
-for act in r.json():
-    print(act["name"], act["distance"], act["start_date"])
+string_value = "###"
 
+w.secrets.put_secret(scope=scope_name, key=key_name, string_value=string_value)
+
+# COMMAND ----------
+
+scrts = w.secrets.list_secrets(scope=scope_name)
+scrts
