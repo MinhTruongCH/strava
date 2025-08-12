@@ -1,4 +1,5 @@
 from strava_utils import mps_to_kmh
+import math
 
 def test_mps_to_kmh_basic():
     assert mps_to_kmh(10.0) == 36.0
