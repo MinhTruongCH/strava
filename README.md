@@ -31,7 +31,7 @@ This project connects to the Strava API, retrieves the authenticated athlete's a
 ### 2. Generate Initial Tokens
 1. Authorize your app: https://www.strava.com/oauth/authorize?client_id=YOUR_CLIENT_ID&response_type=code&redirect_uri=YOUR_REDIRECT_URI&scope=read,activity:read_all&approval_prompt=force
 
-2. Exchange the `code` received for tokens:
+2. Exchange the `code` received for token:
 ```bash
 curl -X POST "https://www.strava.com/oauth/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
@@ -64,7 +64,7 @@ dbutils.secrets.put(scope="strava", key="expires_at", string_value="1234567890")
 To automate the data ingestion and transformation, create a **Databricks Job** that runs both the ingestion (Python) and transformation (SQL) notebooks in sequence.
 
 **Steps:**
-1. In Databricks, go to **Workflows → Jobs → Create Job**.
+1. In Databricks, go to **Jobs & Pipelines → Create Job**.
 2. **Add the first task**:
    - Name: `bronze_strava_activities`
    - Type: Notebook
@@ -75,7 +75,7 @@ To automate the data ingestion and transformation, create a **Databricks Job** t
    - Type: Notebook
    - Path: `notebooks/silver_strava_activities.sql`
    - Set it to run **after** the first task.
-4. Configure the schedule (e.g., daily at 6 AM).
+4. Configure the schedule (e.g., daily at 09:00).
 5. Save and run the job.
 
 This ensures the pipeline fetches the latest Strava activities and updates the Silver table automatically.
@@ -92,7 +92,7 @@ Once the Silver table is ready, you can create dashboards for analysis.
 1. Go to **SQL → Queries** in Databricks.
 2. Write queries against `workspace.strava.silver_activities` (e.g., average speed trends, weekly distance).
 3. Save queries and add them to a **Dashboard**.
-4. Configure auto-refresh (e.g., every 15 minutes) to display updated data from the scheduled job.
+4. Configure auto-refresh (e.g., every day) to display updated data from the scheduled job.
 
 **Option 2 — External BI Tools**
 You can connect Databricks to external BI tools:
